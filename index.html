@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stayover — Two Vacations for the Price of One</title>
+  <meta name="description" content="Stayover transforms flight layovers into curated city adventures. Discover hidden multi-city routes, save hundreds on flights, and turn your transit stop into your bonus vacation." />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈</text></svg>" />
+</head>
+<body>
+
+<!-- ══ NAVIGATION ══ -->
+<nav id="nav">
+  <a href="#" class="logo">Stay<span>over</span></a>
+  <ul class="nav-links">
+    <li><a href="#how-it-works">How It Works</a></li>
+    <li><a href="#results">Routes</a></li>
+    <li><a href="#itinerary">Itinerary</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#ai">AI Concierge</a></li>
+    <li><a href="#" class="nav-cta">Sign Up Free</a></li>
+  </ul>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero" id="home">
+  <div class="hero-badge">
+    <span class="dot"></span>
+    Redefining How The World Connects
+  </div>
+  <h1>Don't Just Fly Over.<br><span class="gradient-text">Stop Over.</span></h1>
+  <p>Algorithmically curated layovers that turn your transit stop into a bonus vacation — saving you hundreds while doubling your adventure.</p>
+
+  <div class="search-card" id="searchCard">
+    <div class="search-tabs">
+      <button class="tab active" data-tab="stayover">✈ Stayover Search</button>
+      <button class="tab" data-tab="direct">→ Direct Flights</button>
+      <button class="tab" data-tab="multicity">⬡ Multi-City</button>
+    </div>
+
+    <div class="search-row">
+      <div class="field-group">
+        <label for="origin">🏠 Home City / Origin Airport</label>
+        <input type="text" id="origin" placeholder="e.g. London, Leeds, LHR" autocomplete="off" />
+      </div>
+      <button class="swap-btn" id="swapBtn" title="Swap">⇄</button>
+      <div class="field-group">
+        <label for="destination">📍 Destination</label>
+        <input type="text" id="destination" placeholder="e.g. Sydney, Bangkok, BKK" autocomplete="off" />
+      </div>
+      <div class="field-group">
+        <label for="arriveBy">📅 Must Arrive By</label>
+        <input type="date" id="arriveBy" />
+      </div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <button class="advanced-toggle" id="advancedToggle">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2 4L7 9L12 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Advanced Options (Flexible Travel Window)
+      </button>
+      <span style="font-size:0.78rem; color:var(--text-muted);">✨ We'll find cheap hops + curated layover options</span>
+    </div>
+
+    <div class="advanced-fields" id="advancedFields">
+      <div class="advanced-row">
+        <div class="field-group">
+          <label for="earliestDate">🗓 Earliest Travel Date</label>
+          <input type="date" id="earliestDate" />
+        </div>
+        <div class="field-group">
+          <label for="layoverMin">⏱ Min Layover (hrs)</label>
+          <select id="layoverMin">
+            <option value="4">4 hours</option>
+            <option value="8">8 hours</option>
+            <option value="12">12 hours</option>
+            <option value="24" selected>24 hours (1 day)</option>
+            <option value="48">48 hours (2 days)</option>
+            <option value="72">72 hours (3 days)</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label for="layoverRegion">🌍 Preferred Layover Region</label>
+          <select id="layoverRegion">
+            <option value="any">Any Region</option>
+            <option value="middle-east">Middle East (DXB, DOH)</option>
+            <option value="asia">Southeast Asia (SIN, HKG)</option>
+            <option value="europe">Europe (AMS, CDG, IST)</option>
+            <option value="north-asia">North Asia (NRT, ICN)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="search-footer">
+      <div class="pax-row">
+        <span class="pax-label">👤 Passengers</span>
+        <div class="pax-control">
+          <button class="pax-btn" id="paxMinus">−</button>
+          <span class="pax-count" id="paxCount">1</span>
+          <button class="pax-btn" id="paxPlus">+</button>
+        </div>
+        <select id="cabinClass" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text-primary);font-size:0.82rem;">
+          <option>Economy</option>
+          <option>Premium Economy</option>
+          <option>Business</option>
+          <option>First Class</option>
+        </select>
+      </div>
+      <button class="search-btn" id="searchBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        Find My Stayover
+      </button>
+    </div>
+  </div>
+
+  <!-- Trust Badges -->
+  <div style="display:flex; gap:32px; margin-top:40px; flex-wrap:wrap; justify-content:center; animation:fadeInUp 0.8s 0.5s ease both;">
+    <span style="font-size:0.8rem; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
+      <span style="color:var(--teal);">✓</span> Visa checks built in
+    </span>
+    <span style="font-size:0.8rem; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
+      <span style="color:var(--teal);">✓</span> Baggage recheck alerts
+    </span>
+    <span style="font-size:0.8rem; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
+      <span style="color:var(--teal);">✓</span> True door-to-door cost
+    </span>
+    <span style="font-size:0.8rem; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
+      <span style="color:var(--teal);">✓</span> Airline stopover programs
+    </span>
+  </div>
+</section>
+
+<!-- ══ STATS STRIP ══ -->
+<div class="stats-section">
+  <div class="stats-inner">
+    <div>
+      <div class="stat-number">$450</div>
+      <div class="stat-label">Average savings vs. direct</div>
+    </div>
+    <div>
+      <div class="stat-number">85+</div>
+      <div class="stat-label">Layover cities worldwide</div>
+    </div>
+    <div>
+      <div class="stat-number">10k+</div>
+      <div class="stat-label">Luggage storage spots</div>
+    </div>
+    <div>
+      <div class="stat-number">2×</div>
+      <div class="stat-label">Destinations per trip</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ HOW IT WORKS ══ -->
+<section id="how-it-works" style="padding:100px 5%;">
+  <div class="section-header animate-on-scroll">
+    <div class="section-tag">⚡ The Stayover Method</div>
+    <h2>Two Vacations.<br>One Ticket Price.</h2>
+    <p>Our proprietary temporal routing engine finds flights traditional search engines deliberately hide from you.</p>
+  </div>
+  <div class="steps-grid" style="max-width:1200px; margin:0 auto;">
+    <div class="step-card animate-on-scroll">
+      <div class="step-number">01</div>
+      <div class="step-icon">🎯</div>
+      <h3>Set Your Deadline, Not a Date</h3>
+      <p>Instead of a rigid departure date, you tell us when you <em>must arrive</em>. We explore every routing option within your window to find hidden combinations no one else shows.</p>
+    </div>
+    <div class="step-card animate-on-scroll">
+      <div class="step-number">02</div>
+      <div class="step-icon">🔬</div>
+      <h3>Algorithmic Layover Discovery</h3>
+      <p>Our engine runs three parallel workflows: a direct baseline, an "Origin to Anywhere" sweep, and a connection loop — assembling secret multi-city routes with 24–72 hour layovers.</p>
+    </div>
+    <div class="step-card animate-on-scroll">
+      <div class="step-number">03</div>
+      <div class="step-icon">🗺️</div>
+      <h3>Curated Exploration Window</h3>
+      <p>After subtracting airport buffers, we hand you a realistic "Exploration Window" already filled with luggage storage, tours, restaurants, and transport — all bookable in one tap.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ RESULTS ══ -->
+<section class="results-section" id="results">
+  <div class="results-inner">
+    <div class="results-header">
+      <div>
+        <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:4px;">Showing results for</p>
+        <h2>London → Sydney <span style="color:var(--teal);">via Stayover</span></h2>
+      </div>
+      <div class="sort-bar">
+        <button class="sort-chip active">Best Value</button>
+        <button class="sort-chip">Cheapest</button>
+        <button class="sort-chip">Shortest Total</button>
+        <button class="sort-chip">Longest Layover</button>
+      </div>
+    </div>
+
+    <!-- Card 1: Featured -->
+    <div class="result-card featured animate-on-scroll" id="resultCard1" onclick="selectRoute(0)">
+      <div class="featured-badge">🔥 Best Stayover</div>
+      <div class="result-left">
+        <div class="flight-route">
+          <div class="airport">
+            <div class="airport-code">LHR</div>
+            <div class="airport-name">London Heathrow</div>
+          </div>
+          <div class="route-line">
+            <div class="route-dots">
+              <div class="route-dot" style="left:calc(50% - 5px);"></div>
+            </div>
+            <div class="layover-label">36hr layover · Singapore 🇸🇬</div>
+          </div>
+          <div class="airport">
+            <div class="airport-code">SIN</div>
+            <div class="airport-name">Singapore Changi</div>
+          </div>
+          <div class="route-line">
+            <div class="route-dots"></div>
+          </div>
+          <div class="airport">
+            <div class="airport-code">SYD</div>
+            <div class="airport-name">Sydney Kingsford</div>
+          </div>
+        </div>
+        <div class="flight-meta">
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Total: 2 days, 14 hrs
+          </div>
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg>
+            Departs Mon 14 Mar · Arrives Thu 17 Mar
+          </div>
+        </div>
+        <div class="tags-row">
+          <span class="tag">✓ Visa-Free Landside</span>
+          <span class="tag amber">🏨 Free Hotel via Singapore Airlines</span>
+          <span class="tag purple">✈ Luggage Checked Through</span>
+        </div>
+      </div>
+      <div class="result-right">
+        <div class="price-sub">per person, all taxes</div>
+        <div class="price">£547</div>
+        <div class="savings">↓ Save £389 vs. direct</div>
+        <button class="select-btn">Select & Plan Layover →</button>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="result-card animate-on-scroll" id="resultCard2" onclick="selectRoute(1)">
+      <div class="result-left">
+        <div class="flight-route">
+          <div class="airport">
+            <div class="airport-code">LHR</div>
+            <div class="airport-name">London Heathrow</div>
+          </div>
+          <div class="route-line">
+            <div class="route-dots">
+              <div class="route-dot" style="left:calc(50% - 5px);"></div>
+            </div>
+            <div class="layover-label">48hr layover · Dubai 🇦🇪</div>
+          </div>
+          <div class="airport">
+            <div class="airport-code">DXB</div>
+            <div class="airport-name">Dubai International</div>
+          </div>
+          <div class="route-line">
+            <div class="route-dots"></div>
+          </div>
+          <div class="airport">
+            <div class="airport-code">SYD</div>
+            <div class="airport-name">Sydney Kingsford</div>
+          </div>
+        </div>
+        <div class="flight-meta">
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Total: 3 days, 6 hrs
+          </div>
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg>
+            Departs Sun 13 Mar · Arrives Thu 17 Mar
+          </div>
+        </div>
+        <div class="tags-row">
+          <span class="tag">✓ Visa-Free Landside</span>
+          <span class="tag amber">🏨 Emirates Hotel $14/night</span>
+          <span class="tag" style="background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.3);color:#f87171;">⚠ Baggage Recheck Required</span>
+        </div>
+      </div>
+      <div class="result-right">
+        <div class="price-sub">per person, all taxes</div>
+        <div class="price">£492</div>
+        <div class="savings">↓ Save £444 vs. direct</div>
+        <button class="select-btn">Select & Plan Layover →</button>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="result-card animate-on-scroll" id="resultCard3" onclick="selectRoute(2)">
+      <div class="result-left">
+        <div class="flight-route">
+          <div class="airport">
+            <div class="airport-code">LHR</div>
+            <div class="airport-name">London Heathrow</div>
+          </div>
+          <div class="route-line">
+            <div class="route-dots">
+              <div class="route-dot" style="left:calc(50% - 5px);"></div>
+            </div>
+            <div class="layover-label">24hr layover · Tokyo 🇯🇵</div>
+          </div>
+          <div class="airport">
+            <div class="airport-code">NRT</div>
+            <div class="airport-name">Tokyo Narita</div>
+          </div>
+          <div class="route-line">
+            <div class="route-dots"></div>
+          </div>
+          <div class="airport">
+            <div class="airport-code">SYD</div>
+            <div class="airport-name">Sydney Kingsford</div>
+          </div>
+        </div>
+        <div class="flight-meta">
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Total: 2 days, 18 hrs
+          </div>
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg>
+            Departs Tue 15 Mar · Arrives Thu 17 Mar
+          </div>
+        </div>
+        <div class="tags-row">
+          <span class="tag amber">🎌 Japan Digital Nomad Friendly</span>
+          <span class="tag purple">✓ Virtual Interlining</span>
+          <span class="tag" style="background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.3);color:#f87171;">⚠ eVisa May Be Required</span>
+        </div>
+      </div>
+      <div class="result-right">
+        <div class="price-sub">per person, all taxes</div>
+        <div class="price">£618</div>
+        <div class="savings">↓ Save £318 vs. direct</div>
+        <button class="select-btn">Select & Plan Layover →</button>
+      </div>
+    </div>
+
+    <!-- Direct Baseline -->
+    <div style="background:rgba(255,255,255,0.02); border:1px dashed rgba(255,255,255,0.08); border-radius:var(--radius); padding:20px 32px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-top:8px;">
+      <div>
+        <div style="font-size:0.78rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:4px;">Direct Comparison</div>
+        <div style="font-size:1rem; font-weight:600; color:var(--text-secondary);">LHR → SYD Direct · ~22 hrs · No Stops</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:0.8rem; color:var(--text-muted);">per person</div>
+        <div style="font-size:1.6rem; font-weight:700; color:var(--text-secondary); text-decoration:line-through;">£936</div>
+        <div style="font-size:0.78rem; color:#f87171;">No bonus destination</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ITINERARY TIMELINE ══ -->
+<section class="timeline-section animate-on-scroll" id="itinerary">
+  <div class="timeline-header">
+    <div>
+      <div class="section-tag">🗺️ Your Exploration Window</div>
+      <h2>36 Hours in Singapore</h2>
+      <p style="color:var(--text-secondary); margin-top:8px;">After airport buffers, you have <strong style="color:var(--teal);">31 hours</strong> of free city time.</p>
+    </div>
+    <div class="exploration-window">
+      <div>
+        <div class="window-label">Exploration Window</div>
+        <div class="window-time">31:00 hrs</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-track">
+      <div class="timeline-line"></div>
+    </div>
+    <div class="timeline-events">
+
+      <div class="timeline-event">
+        <div class="event-time">08:15</div>
+        <div class="event-dot airport"></div>
+        <div class="event-body">
+          <div class="event-card">
+            <h4>✈ Arrive Singapore Changi (SIN) — Terminal 3</h4>
+            <p>Clear immigration · Collect baggage (recheck not required on this itinerary)</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-event">
+        <div class="event-time">08:45</div>
+        <div class="event-dot luggage"></div>
+        <div class="event-body">
+          <div class="event-card">
+            <h4>🧳 Drop Luggage — Stasher @ Changi City Point</h4>
+            <p>6-minute walk · Securely stored for $4/day · Opens 7am</p>
+            <div class="event-affiliate">
+              <a href="#" class="affiliate-chip">📦 Book via Stasher · 10% commission</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-event">
+        <div class="event-time">09:30</div>
+        <div class="event-dot transfer"></div>
+        <div class="event-body">
+          <div class="event-card">
+            <h4>🚇 MRT to City Centre — Changi Airport → Bayfront</h4>
+            <p>Express train · 30 minutes · $2.20 SGD</p>
+            <div class="event-affiliate">
+              <a href="#" class="affiliate-chip">🚆 Book Express Transfer · 12% commission</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-event">
+        <div class="event-time">10:00</div>
+        <div class="event-dot activity"></div>
+        <div class="event-body">
+          <div class="event-card">
+            <h4>🌿 Gardens by the Bay — Supertree Grove</h4>
+            <p>World-famous sky garden · Open 5am–2am · Free external access</p>
+            <div class="event-affiliate">
+              <a href="#" class="affiliate-chip">🎟 Skip-the-Line via GetYourGuide · 8% commission</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-event">
+        <div class="event-time">12:30</div>
+        <div class="event-dot activity"></div>
+        <div class="event-body">
+          <div class="event-card">
+            <h4>🍜 Hawker Centre Lunch — Maxwell Food Centre</h4>
+            <p>Authentic local cuisine · Budget ~$8–12 SGD · 15-min walk</p>
+            <div class="event-affiliate">
+              <a href="#" class="affiliate-chip">🍽 Book Food Tour via Viator · 8% commission</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-event">
+        <div class="event-time">19:00</div>
+        <div class="event-dot activity"></div>
+        <div class="event-body">
+          <div class="event-card">
+            <h4>🏨 Check In — Singapore Changi Airport Hotel</h4>
+            <p>Transit hotel · Pre-booked via Singapore Airlines partnership · Included in fare</p>
+            <div class="event-affiliate">
+              <a href="#" class="affiliate-chip">🏨 Premium hotel via Holiday Extras · 2% commission</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-event">
+        <div class="event-time">+1 · 07:00</div>
+        <div class="event-dot transfer"></div>
+        <div class="event-body">
+          <div class="event-card">
+            <h4>🚇 Return to Changi Airport — SIN Terminal 1</h4>
+            <p>Departures: SIN → SYD · Check-in opens 09:30</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-event">
+        <div class="event-time">+1 · 11:45</div>
+        <div class="event-dot airport"></div>
+        <div class="event-body">
+          <div class="event-card">
+            <h4>✈ Depart Singapore → Sydney (SYD)</h4>
+            <p>Flight SQ231 · 7h 45m · Arrives 22:30 local time</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ AFFILIATE SERVICES ══ -->
+<section class="affiliate-section" id="services">
+  <div class="affiliate-inner">
+    <div class="section-header animate-on-scroll">
+      <div class="section-tag">💼 Layover Services</div>
+      <h2>Everything You Need,<br>One Place to Book</h2>
+      <p>Commission-funded partnerships mean we earn when you book — so every recommendation is genuinely curated for your layover window.</p>
+    </div>
+    <div class="affiliate-grid">
+
+      <div class="affiliate-card animate-on-scroll">
+        <div class="affiliate-icon">🧳</div>
+        <h3>Stasher Luggage Storage</h3>
+        <p>3,000+ verified locations across 600 cities. Ditch your bags and explore freely from the moment you land.</p>
+        <div class="commission-badge">✓ 10% commission · From $4/day</div>
+      </div>
+
+      <div class="affiliate-card animate-on-scroll">
+        <div class="affiliate-icon">📦</div>
+        <h3>Bounce Storage Network</h3>
+        <p>10,000+ trusted partner locations globally. Hourly or daily rates, instant booking, GPS-tracked locations.</p>
+        <div class="commission-badge">✓ 10% commission · From $5.90/day</div>
+      </div>
+
+      <div class="affiliate-card animate-on-scroll">
+        <div class="affiliate-icon">🎭</div>
+        <h3>Viator Tours & Experiences</h3>
+        <p>345,000+ tours filtered by your exact layover duration. From 2-hour city sprints to full-day adventures.</p>
+        <div class="commission-badge">✓ 8% commission · 30-day cookie</div>
+      </div>
+
+      <div class="affiliate-card animate-on-scroll">
+        <div class="affiliate-icon">🗼</div>
+        <h3>GetYourGuide</h3>
+        <p>Specialist layover products — "London Layover from Heathrow," skip-the-line tickets, private guided tours.</p>
+        <div class="commission-badge">✓ Layover-specific products</div>
+      </div>
+
+      <div class="affiliate-card animate-on-scroll">
+        <div class="affiliate-icon">🚀</div>
+        <h3>Fast Track & Airport Lounges</h3>
+        <p>Holiday Extras premium services: Fast Track Security, VIP Airport Lounges, Transit Hotels — pre-bookable at point of sale.</p>
+        <div class="commission-badge">✓ 2% commission · High-margin</div>
+      </div>
+
+      <div class="affiliate-card animate-on-scroll">
+        <div class="affiliate-icon">🚆</div>
+        <h3>Express Rail Transfers</h3>
+        <p>Heathrow Express, Gatwick Express, Trainline integrations. Instant booking, no extra steps, deep-linked pricing.</p>
+        <div class="commission-badge">✓ Up to 12% commission</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ AI CONCIERGE ══ -->
+<section class="ai-section animate-on-scroll" id="ai">
+  <div class="ai-grid">
+    <div class="ai-copy">
+      <div class="section-tag">🤖 AI Concierge</div>
+      <h2>Your Personal<br><span class="gradient-text">Layover Architect</span></h2>
+      <p>Our LLM-powered concierge plots a geographically intelligent itinerary on a live map, calculates transit times between each stop, and lets you tweak it conversationally in real time.</p>
+      <div class="ai-features">
+        <div class="ai-feature">
+          <div class="ai-feature-dot"></div>
+          <p><strong>Dynamic Map Integration</strong> — Routes plotted on Mapbox with real transit times between luggage drop, sightseeing, and restaurants.</p>
+        </div>
+        <div class="ai-feature">
+          <div class="ai-feature-dot"></div>
+          <p><strong>Conversational Tweaking</strong> — "Swap the museum for a street food market and get us back by 6PM." AI recalculates and re-links instantly.</p>
+        </div>
+        <div class="ai-feature">
+          <div class="ai-feature-dot"></div>
+          <p><strong>Persistent Memory</strong> — The AI remembers your preferences across trips. No morning activities if you hate them. Always vegetarian. Zero-click personalization.</p>
+        </div>
+        <div class="ai-feature">
+          <div class="ai-feature-dot"></div>
+          <p><strong>Live Affiliate Links</strong> — Every recommendation in the chat auto-selects the best affiliate offer for your layover window.</p>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="ai-chat">
+        <div class="chat-header">
+          <div class="chat-avatar">✨</div>
+          <div>
+            <div class="chat-title">Stayover AI Concierge</div>
+            <div class="chat-status"><span class="online-dot"></span>Online · Singapore Expert</div>
+          </div>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="msg ai">Hi! I've planned your <strong>31-hour Singapore stayover</strong>. I mapped 6 stops across the city — starting with luggage drop at Changi City Point. Ready to explore? 🌿</div>
+          <div class="msg user">Swap the botanic gardens for a street food tour instead</div>
+          <div class="msg ai">Done! 🍜 Replacing with a <strong>3-hour hawker trail</strong> starting at Lau Pa Sat, then Maxwell Food Centre, finishing at Tiong Bahru Market. I've updated the map route and re-linked the Viator booking. Saves you 40 minutes of walking too!</div>
+          <div class="msg user">Make sure we're back at Changi by 9:30am</div>
+          <div class="msg ai">✅ Recalculated. Added a 35-min buffer for the MRT from Bayfront. I've moved your hotel check-out to 7:15am. All timeline cards and affiliate links updated. You're clear for the 11:45am departure ✈</div>
+        </div>
+        <div class="chat-input-row">
+          <input class="chat-input" id="chatInput" type="text" placeholder="Ask your concierge anything…" />
+          <button class="chat-send" id="chatSendBtn">→</button>
+        </div>
+      </div>
+      <div class="map-placeholder">
+        <div style="font-size:2rem;">🗺️</div>
+        <div>Interactive Mapbox itinerary map</div>
+        <div style="font-size:0.75rem; color:var(--text-muted);">Plots each stop with transit times &amp; affiliate links</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA BANNER ══ -->
+<section style="padding:80px 5%; text-align:center; background:linear-gradient(135deg, rgba(0,212,200,0.06), rgba(124,92,252,0.06)); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <div class="animate-on-scroll">
+    <h2 style="font-size:clamp(2rem,4vw,3.2rem); font-weight:800; margin-bottom:16px;">
+      Why fly over when you can <span class="gradient-text">stay over?</span>
+    </h2>
+    <p style="color:var(--text-secondary); max-width:500px; margin:0 auto 36px;">Join thousands of smart travelers turning their transit time into the highlight of the trip.</p>
+    <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+      <button class="search-btn" onclick="document.getElementById('origin').focus(); window.scrollTo({top:0,behavior:'smooth'})">
+        ✈ Plan My Stayover
+      </button>
+      <button style="background:none;border:1px solid var(--border);color:var(--text-primary);border-radius:var(--radius-sm);padding:16px 32px;font-size:0.95rem;font-weight:600;cursor:pointer;transition:var(--transition);" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--border)'">
+        View Sample Itineraries →
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#" class="logo">Stay<span>over</span></a>
+        <p>Transforming the world's most-hated travel experience into its best-kept secret. Don't just fly over. Stop over.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <ul>
+          <li><a href="#">Stayover Search</a></li>
+          <li><a href="#">AI Concierge</a></li>
+          <li><a href="#">Visa Checker</a></li>
+          <li><a href="#">Baggage Guide</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Partners</h4>
+        <ul>
+          <li><a href="#">Airline Programs</a></li>
+          <li><a href="#">Luggage Storage</a></li>
+          <li><a href="#">Tour Operators</a></li>
+          <li><a href="#">Hotel Partners</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About Stayover</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Affiliate Program</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Stayover. All rights reserved. · <a href="#" style="color:var(--text-muted); text-decoration:none;">Privacy</a> · <a href="#" style="color:var(--text-muted); text-decoration:none;">Terms</a></p>
+      <div class="footer-socials">
+        <a href="#" class="social-btn">𝕏</a>
+        <a href="#" class="social-btn">in</a>
+        <a href="#" class="social-btn">ig</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
