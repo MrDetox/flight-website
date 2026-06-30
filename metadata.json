@@ -1,7 +1,0 @@
-{
-  "name": "LayoverHacker v1",
-  "description": "Next-generation AI-driven flight booking platform that turns layovers into bonus vacations.",
-  "requestFramePermissions": [
-    "geolocation"
-  ]
-}
